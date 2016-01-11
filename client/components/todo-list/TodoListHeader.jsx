@@ -98,10 +98,14 @@ TodoListHeader = React.createClass({
     });
   },
 
-  render() {
+  _renderScores() {
     const {list, lists} = this.props;
 
     const opponent = lists.find(obj => obj._id !== list._id);
+    if (opponent == null || opponent.checkedOrderList == null || list.checkedOrderList == null) {
+      return null;
+    }
+
     var myScore = 0;
     var opponentScore = 0;
     for (var i = 0; i < Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length); i ++) {
@@ -119,13 +123,19 @@ TodoListHeader = React.createClass({
       opponent.checkedOrderList.length - oppenentUsedBlackCount;
 
 
-    const newTaskForm = (
+    return (
       <span className="todo-new input-symbol">
         Me: {myScore} - Opponent: {opponentScore}
         {" ******* "}
         BLACK: {4 - oppenentUsedBlackCount} - B: {5 - oppenentUsedWhiteCount}
       </span>
     );
+  },
+
+  render() {
+    const {list, lists} = this.props;
+
+    const newTaskForm = this._renderScores();
 
     let nav;
     if (this.state.editingTitle) {
