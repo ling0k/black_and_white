@@ -27,31 +27,39 @@ TodoItem = React.createClass({
   },
 
   onTextChange(event) {
-    const curText = event.target.value;
-    this.setState({curText: curText});
-
-    // Throttle updates so we don't go to minimongo and then the server
-    // on every keystroke.
-    this.updateText = this.updateText || _.throttle(newText => {
-      Meteor.call("/todos/setText", this.props.task._id, newText);
-    }, 300);
-
-    this.updateText(curText);
+    // const curText = event.target.value;
+    this.setState({curText: this.props.task.text});
+    //
+    // // Throttle updates so we don't go to minimongo and then the server
+    // // on every keystroke.
+    // this.updateText = this.updateText || _.throttle(newText => {
+    //   Meteor.call("/todos/setText", this.props.task._id, newText);
+    // }, 300);
+    //
+    // this.updateText(curText);
   },
 
   onCheckboxChange() {
     // Set to the opposite of the current state
-    const checked = ! this.props.task.checked;
+    // const checked = ! this.props.task.checked;
 
-    Meteor.call("/todos/setChecked", this.props.task._id, checked);
+    if (this.props.task.checked) {
+      return;
+    }
+
+    Meteor.call("/todos/setChecked", this.props.task._id, true);
   },
 
-  removeThisItem() {
-    Meteor.call("/todos/delete", this.props.task._id);
-  },
+  // removeThisItem() {
+  //   Meteor.call("/todos/delete", this.props.task._id);
+  // },
 
   render() {
     let className = "list-item";
+
+    if (this.props.task.text % 2 === 0) {
+      className += " black";
+    }
 
     if (this.props.beingEdited) {
       className += " editing";
@@ -78,11 +86,6 @@ TodoItem = React.createClass({
           onFocus={ this.onFocus }
           onBlur={ this.onBlur }
           onChange={ this.onTextChange } />
-        <a className="delete-item"
-          onClick={ this.removeThisItem }
-          onMouseDown={ this.removeThisItem }>
-          <span className="icon-trash" />
-        </a>
       </div>
     );
   }

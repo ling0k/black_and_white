@@ -51,3 +51,40 @@
   .delete-item { display: none; }
   &.editing .delete-item { display: inline-block; }
 }
+
+.list-items .list-item.black {
+  background-color: #333;
+
+  // // Style of list-item children
+  input[type="text"] {
+    color: #fff;
+  }
+  //
+  // .delete-item {
+  //   color: @color-medium-rare;
+  //   line-height: 3rem;
+  //   text-align: center;
+  //
+  //   &:hover { color: @color-primary; }
+  //   &:active { color: @color-well; }
+  //   .icon-trash { font-size: 1.1em; }
+  // }
+
+
+  // // Border between list items
+  // & + .list-item { border-top: 1px solid #f0f9fb; }
+
+  // Checked
+  // &.checked {
+  //   input[type="text"] {
+  //     color: @color-medium-rare;
+  //     text-decoration: line-through;
+  //   }
+  //
+  //   .delete-item { display: inline-block; }
+  // }
+
+  // // Editing
+  // .delete-item { display: none; }
+  // &.editing .delete-item { display: inline-block; }
+}

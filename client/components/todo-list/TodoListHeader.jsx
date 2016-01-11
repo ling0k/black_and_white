@@ -2,7 +2,12 @@ TodoListHeader = React.createClass({
   mixins: [ReactRouter.Navigation],
 
   propTypes: {
+    scoreA: React.PropTypes.number,
+    scoreB: React.PropTypes.number,
+    black: React.PropTypes.number,
+    white: React.PropTypes.number,
     list: React.PropTypes.object.isRequired,
+    lists: React.PropTypes.array.isRequired,
     tasksLoading: React.PropTypes.bool
   },
 
@@ -94,14 +99,32 @@ TodoListHeader = React.createClass({
   },
 
   render() {
-    const list = this.props.list;
+    const {list, lists} = this.props;
+
+    const opponent = lists.find(obj => obj._id !== list._id);
+    var myScore = 0;
+    var opponentScore = 0;
+    for (var i = 0; i < Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length); i ++) {
+      if (list.checkedOrderList[i] > opponent.checkedOrderList[i]) {
+        myScore ++;
+      } else if (list.checkedOrderList[i] < opponent.checkedOrderList[i]) {
+        opponentScore ++;
+      }
+    }
+
+    var oppenentUsedBlackCount =
+      opponent.checkedOrderList.filter(value => value % 2 === 0).length;
+
+    var oppenentUsedWhiteCount =
+      opponent.checkedOrderList.length - oppenentUsedBlackCount;
+
 
     const newTaskForm = (
-      <form className="todo-new input-symbol"
-          onSubmit={ this.onSubmitNewTask }>
-        <input type="text" name="text" ref="newTaskInput" placeholder="Type to add new tasks" />
-        <span className="icon-add" />
-      </form>
+      <span className="todo-new input-symbol">
+        Me: {myScore} - Opponent: {opponentScore}
+        {" ******* "}
+        BLACK: {4 - oppenentUsedBlackCount} - B: {5 - oppenentUsedWhiteCount}
+      </span>
     );
 
     let nav;
