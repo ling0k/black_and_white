@@ -2,10 +2,6 @@ TodoListHeader = React.createClass({
   mixins: [ReactRouter.Navigation],
 
   propTypes: {
-    scoreA: React.PropTypes.number,
-    scoreB: React.PropTypes.number,
-    black: React.PropTypes.number,
-    white: React.PropTypes.number,
     list: React.PropTypes.object.isRequired,
     lists: React.PropTypes.array.isRequired,
     tasksLoading: React.PropTypes.bool
@@ -77,57 +73,109 @@ TodoListHeader = React.createClass({
     });
   },
 
-  onSubmitNewTask(event) {
-    event.preventDefault();
-
-    const listId = this.props.list._id;
-    const input = ReactDOM.findDOMNode(this.refs.newTaskInput);
-    const taskText = input.value;
-    if (! taskText) {
-      // Don't do anything if the input is empty
-      return;
-    }
-
-    Meteor.call("/lists/addTask", this.props.list._id, taskText, (err, res) => {
-      if (err) {
-        alert("Failed to add new task.");
-        return;
-      }
-
-      input.value = "";
-    });
+  _isBlack(value) {
+    return value % 2 === 0;
   },
 
-  _renderScores() {
+  _isMyTurn() {
     const {list, lists} = this.props;
 
-    const opponent = lists.find(obj => obj._id !== list._id);
-    if (opponent == null || opponent.checkedOrderList == null || list.checkedOrderList == null) {
-      return null;
+    const opponent = this._getOpponent();
+    if (opponent.checkedOrderList.length === 0 && list.checkedOrderList.length === 0) {
+      return list._id > opponent._id;
     }
 
+    if (opponent.checkedOrderList.length > list.checkedOrderList.length) {
+      return true;
+    }
+
+    if (opponent.checkedOrderList.length === list.checkedOrderList.length) {
+      let [myScore, opponentScore] = this._getScores();
+      if (myScore === opponentScore) {
+        return list._id > opponent._id;
+      }
+      return myScore > opponentScore;
+    }
+
+    return false;
+  },
+
+  _getScores() {
+    const {list, lists} = this.props;
+
+    const opponent = this._getOpponent();
     var myScore = 0;
     var opponentScore = 0;
-    for (var i = 0; i < Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length); i ++) {
+
+    var round = Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    for (var i = 0; i < round; i ++) {
       if (list.checkedOrderList[i] > opponent.checkedOrderList[i]) {
         myScore ++;
       } else if (list.checkedOrderList[i] < opponent.checkedOrderList[i]) {
         opponentScore ++;
       }
     }
+    return [myScore, opponentScore];
+  },
+
+  _getOpponent() {
+    const {list, lists} = this.props;
+    return lists.find(obj => obj._id !== list._id);
+  },
+
+  _getLastOpponentColor() {
+    const opponent = this._getOpponent();
+    if (opponent.checkedOrderList.length === 0) {
+      return "* * *";
+    }
+    return this._isBlack(opponent.checkedOrderList[opponent.checkedOrderList.length - 1])
+      ? " * Black * " :  " * White * ";
+  },
+
+  _renderScores() {
+    const {list, lists} = this.props;
+
+    const opponent = this._getOpponent();
+    if (opponent == null || opponent.checkedOrderList == null || list.checkedOrderList == null) {
+      return null;
+    }
+
+    let [myScore, opponentScore] = this._getScores();
+
+    var round = Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    if (round === 9 && !this._alerted) {
+
+      var result;
+      if (myScore === opponentScore) {
+        result = 'DRAW!!!! \n';
+      } else if (myScore > opponentScore) {
+        result = 'WIN!!!! \n';
+      } else {
+        result = 'LOSE!!!! \n';
+      }
+
+      for (var i = 0; i < 9; i++) {
+        result += "Me: " + list.checkedOrderList[i] + " - Opponent: " + opponent.checkedOrderList[i] + "\n";
+      }
+      this._alerted = true;
+      alert(result);
+    }
+
+    var midLabel = this._getLastOpponentColor();
+    if (this._isMyTurn()) {
+      midLabel += "(MY TURN)";
+    }
 
     var oppenentUsedBlackCount =
-      opponent.checkedOrderList.filter(value => value % 2 === 0).length;
+      opponent.checkedOrderList.filter(this._isBlack).length;
 
     var oppenentUsedWhiteCount =
       opponent.checkedOrderList.length - oppenentUsedBlackCount;
-
-
     return (
       <span className="todo-new input-symbol">
         Me: {myScore} - Opponent: {opponentScore}
-        {" ******* "}
-        BLACK: {4 - oppenentUsedBlackCount} - B: {5 - oppenentUsedWhiteCount}
+        {midLabel}
+        B: {4 - oppenentUsedBlackCount} - W: {5 - oppenentUsedWhiteCount}
       </span>
     );
   },
