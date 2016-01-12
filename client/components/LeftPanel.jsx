@@ -10,11 +10,6 @@ LeftPanel = React.createClass({
       <section id="menu">
         <UserSidebarSection user={ this.props.currentUser } />
         <div className="list-todos">
-          <a className="link-list-new" onClick={ this.props.onAddList }>
-            <span className="icon-plus"></span>
-            New List
-          </a>
-        
           <TodoLists
             lists={this.props.lists}
             activeListId={this.props.activeListId} />

@@ -46,7 +46,7 @@ TodoListHeader = React.createClass({
       "final-list-delete": "Sorry, you cannot delete the final public list!",
     };
 
-    const message = `Are you sure you want to delete the list ${this.props.list.name}?`;
+    const message = `Are you sure you want to restart Room: ${this.props.list.roomID}?`;
     if (confirm(message)) {
       Meteor.call("/lists/delete", this.props.list._id, (err, res) => {
         if (err) {
@@ -120,7 +120,7 @@ TodoListHeader = React.createClass({
 
   _getOpponent() {
     const {list, lists} = this.props;
-    return lists.find(obj => obj._id !== list._id);
+    return lists.find(obj => obj._id !== list._id && obj.roomID === list.roomID);
   },
 
   _getLastOpponentColor() {
@@ -214,21 +214,11 @@ TodoListHeader = React.createClass({
           </h1>
           <div className="nav-group right">
             <div className="nav-item options-mobile">
-              <select className="list-edit">
-                <option disabled>Select an action</option>
-                { list.userId ?
-                  <option value="public">Make Public</option> :
-                  <option value="private">Make Private</option> }
-                <option value="delete">Delete</option>
-              </select>
-              <span className="icon-cog"></span>
+              <a className="nav-item" onClick={ this.deleteList }>
+                <span className="icon-trash" title="Delete list"></span>
+              </a>
             </div>
             <div className="options-web">
-              <a className="nav-item" onClick={ this.toggleListPrivacy }>
-                { list.userId ?
-                    <span className="icon-lock" title="Make list public" /> :
-                    <span className="icon-unlock" title="Make list private" /> }
-              </a>
               <a className="nav-item" onClick={ this.deleteList }>
                 <span className="icon-trash" title="Delete list"></span>
               </a>
