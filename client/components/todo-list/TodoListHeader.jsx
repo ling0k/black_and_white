@@ -107,7 +107,7 @@ TodoListHeader = React.createClass({
     var myScore = 0;
     var opponentScore = 0;
 
-    var round = Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    var round = this._getRound()
     for (var i = 0; i < round; i ++) {
       if (list.checkedOrderList[i] > opponent.checkedOrderList[i]) {
         myScore ++;
@@ -132,6 +132,12 @@ TodoListHeader = React.createClass({
       ? " * Black * " :  " * White * ";
   },
 
+  _getRound() {
+    const {list, lists} = this.props;
+    const opponent = this._getOpponent();
+    return Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+  },
+
   _renderScores() {
     const {list, lists} = this.props;
 
@@ -142,7 +148,7 @@ TodoListHeader = React.createClass({
 
     let [myScore, opponentScore] = this._getScores();
 
-    var round = Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    var round = this._getRound();
     if (round === 9 && !this._alerted) {
 
       var result;
@@ -210,7 +216,7 @@ TodoListHeader = React.createClass({
           <MenuOpenToggle />
           <h1 className="title-page" onClick={ this.startEditingTitle }>
             <span className="title-wrapper">{ list.name }</span>
-            <span className="count-list">{ list.incompleteCount }</span>
+            <span className="count-list">{ this._getRound() }</span>
           </h1>
           <div className="nav-group right">
             <div className="nav-item options-mobile">

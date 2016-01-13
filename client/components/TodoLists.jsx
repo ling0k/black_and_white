@@ -19,10 +19,9 @@ TodoLists = React.createClass({
           key={ list._id }
           to={`/lists/${list._id}`}>
             { list.name }
-            { list.incompleteCount ?
-              <span className="count-list">
-                { list.incompleteCount }
-              </span> : "" }
+            <span className="count-list">
+              { list.checkedOrderList ? list.checkedOrderList.length : 0 }
+            </span>
         </Link>
       );
     });

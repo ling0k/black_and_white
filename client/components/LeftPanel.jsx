@@ -6,12 +6,14 @@ LeftPanel = React.createClass({
     activeListId: React.PropTypes.string,
   },
   render() {
+    var {lists} = this.props;
+    lists.sort((a, b) => a.name > b.name);
     return (
       <section id="menu">
         <UserSidebarSection user={ this.props.currentUser } />
         <div className="list-todos">
           <TodoLists
-            lists={this.props.lists}
+            lists={lists}
             activeListId={this.props.activeListId} />
         </div>
       </section>
