@@ -135,7 +135,11 @@ TodoListHeader = React.createClass({
   _getRound() {
     const {list, lists} = this.props;
     const opponent = this._getOpponent();
-    return Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    if (opponent.checkedOrderList && list.checkedOrderList) {
+      return Math.min(opponent.checkedOrderList.length, list.checkedOrderList.length);
+    } else {
+      return 0;
+    }
   },
 
   _renderScores() {

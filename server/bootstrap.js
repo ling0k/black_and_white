@@ -42,6 +42,7 @@ Meteor.startup(function () {
         name: list.name,
         incompleteCount: list.items.length,
         roomID: list.roomID,
+        checkedOrderList: [],
       });
 
       _.each(list.items, function(text) {
